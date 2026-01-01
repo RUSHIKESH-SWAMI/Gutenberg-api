@@ -1,21 +1,28 @@
+import os
 from flask import Flask, jsonify, request
 import psycopg2
 
 app = Flask(__name__)
 
+# def get_db_connection():
+#     return psycopg2.connect(
+#         host="localhost",
+#         dbname="gutenberg",
+#         user="rushikesh",
+#         password="1234r"
+#     )
+
 def get_db_connection():
-    return psycopg2.connect(
-        host="localhost",
-        dbname="gutenberg",
-        user="rushikesh",
-        password="1234r"
-    )
+    # This reads the 'DATABASE_URL' you will set in the Render Dashboard
+    database_url = os.environ.get("DATABASE_URL")
+    return psycopg2.connect(database_url)
+
 
 @app.route("/")
 def home():
     return "API is running"
 
-@app.route("/books")
+@app.route("/api/books")
 def books():
     page = int(request.args.get("page", 1))
     limit = 25
@@ -72,7 +79,6 @@ def books():
     return jsonify(list(books.values()))
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
 
